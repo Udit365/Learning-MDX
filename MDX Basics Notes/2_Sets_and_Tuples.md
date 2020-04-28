@@ -1,5 +1,5 @@
 # SETS & TUPLES
----
+
 Some of the key differences between sets and tuples are :
 
 |SETS|TUPLES|
@@ -8,9 +8,9 @@ Some of the key differences between sets and tuples are :
 |Enclosed withing `{}`|Enclosed withing `()`|
 |Performs **Union** opration|Performs **Crossjoin** operation|
 
-## TUPLES
----
-In the below example, `Country` and `Calender Year` belong to different attribute and hence treated as a tuple.
+### TUPLES
+
+In the below example, *Country* and *Calender Year* belong to different attribute and hence treated as a tuple.
 
 ```mdx
 SELECT
@@ -37,9 +37,9 @@ FROM
 [Adventure Works]
 ```
 
-## SETS
----
-In the below example, both `Canada` and `Australia` belong to the same attribute, i.e., `[Geography].[Country]` and hence treated as a set.
+### SETS
+
+In the below example, both *Canada* and *Australia* belong to the same attribute, i.e., `[Geography].[Country]` and hence treated as a set.
 ```mdx
 SELECT
 [Measures].[Sales Amount] ON COLUMNS,
@@ -66,10 +66,10 @@ FROM
 [Adventure Works]
 ```
 
-## MIXING SETS & TUPLES
----
+### MIXING SETS & TUPLES
 
-In the below example; `Canada`, `Germany` and `United Kingdom` belong to the `[Sales Territory].[Sales Territory Country]` attribute and hence treated as a set, whereas, `Europe` belongs to a different attribute, i.e., `[Sales Territory].[Sales Territory Group]` and hence, we have to treat the combination of 3 countries and `Europe` as a tuple.
+
+In the below example; *Canada*, *Germany* and *United Kingdom* belong to the `[Sales Territory].[Sales Territory Country]` attribute and hence treated as a set, whereas, *Europe* belongs to a different attribute, i.e., `[Sales Territory].[Sales Territory Group]` and hence, we have to treat the combination of 3 countries and *Europe* as a tuple.
 
 ```mdx
 SELECT
@@ -88,7 +88,7 @@ FROM
 [Adventure Works]
 ```
 
-**Union** operation took between he set of countries and then, we have **crossjoin** between the set of countries and `Europe`.
+**Union** operation happened between the set of countries and then, we have **crossjoin** between the set of countries and *Europe*.
 
 Because, **crossjoin** occur within the members of a set, therefore, in the result, we will only get a two rows, as follows :
 
@@ -97,12 +97,11 @@ Because, **crossjoin** occur within the members of a set, therefore, in the resu
 |Germany|Europe|$4,878,300.38|
 |United Kingdom|Europe|$7,670,721.04|
 
-we will not `Canada` because, no combination exists between `Europe` and `Canada` as, `Canada` belongs to `North America` group.
+we will not get *Canada* because there is no combination exists between *Europe* and *Canada* as, *Canada* belongs to *North America* group.
 
-## REMOVING NULL/BLANK VALUES
----
+### REMOVING NULL/BLANK VALUES
 
-For removing the null values from rows/columns, we need to enclose the sets/tuples withing `()`.
+For removing the null values from rows/columns, we need to enclose the sets/tuples within `NONEMPTY()`.
 
 For example :
 
@@ -126,10 +125,10 @@ ON ROWS
 FROM
 [Adventure Works]
 ```
-## USING EMPTY SET
----
+### USING EMPTY SET
 
-If we just want to see the list of countries only then, we can just pass an empty set, i.e., `{}` in columns as follows :
+
+If we just want to see the list of countries then, we can pass an empty set, i.e., `{}` in columns as follows :
 
 ```mdx
 SELECT
@@ -147,10 +146,10 @@ If we put `()` instead of `{}` then, we will get an error because, empty tuple i
     1. *Empty set is allowed but, empty tuple is not allowed*
     2. *If there is no comma separated values in rows/columns, i.e., we have a single object then, we it will work perfectly even if we treat it as a set (enclosed within curly braces) or, tuple (enclosed within normal braces) or, left it without enclosng it within any kind of braces.*
 
-## Handling Hierarchies
----
+### Handling Hierarchies
 
-In a geography hierarchy both, `Group` and `Country` belongs to the different levels of same attribute hierarchy and therefore, we have to put them togather as a set :
+
+In a geography hierarchy both, *Group* and *Country* belongs to the different levels of same attribute hierarchy and therefore, we have to put them togather as a set :
 
 ```mdx
 SELECT
@@ -165,10 +164,6 @@ ON ROWS
 FROM
 [Adventure Works]
 ```
-Upon executing the above code, we will first get the `Sales Amount` by `Groups` and below that `Sales Amount` by `Countries`.
+Upon executing the above code, we will first get the *Sales Amount* by *Groups* and below that *Sales Amount* by `Countries`.
 
 This is because of **union** operation that took place within a set.
-
-
-
-

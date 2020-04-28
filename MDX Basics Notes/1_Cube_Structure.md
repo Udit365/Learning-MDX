@@ -31,7 +31,7 @@ Moving further, if we expand any level then, we reach to the most granular level
 
 <img src = "../Images/CubeStructure3.png" width = 400>
 
-
+A member is nothing but the element/category present under a certain column.
 
 
 ## Measure Axis
