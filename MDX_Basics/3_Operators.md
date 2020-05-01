@@ -16,16 +16,15 @@ In the below code, we have selected two *countries* from the *Sales Territory* a
 
 ```mdx
 SELECT
-[Measures].[Sales Amount]
-ON COLUMNS,
+[Measures].[Sales Amount] ON COLUMNS,
+
 {
-	[Sales Territory].[Sales Territory Country].&[Australia],
-	[Sales Territory].[Sales Territory Country].&[Germany]
-}
-ON ROWS
+	[Dim Sales Territory].[Sales Territory Country].&[Australia],
+	[Dim Sales Territory].[Sales Territory Country].&[Canada]
+} ON ROWS
 
 FROM
-[Adventure Works]
+[AdventureWorksDW]
 ```
 ### COLON OPERATOR
 
@@ -33,16 +32,15 @@ If we have to select a range of information from the same attribute then, instea
 
 ```mdx
 SELECT
-[Measures].[Sales Amount]
-ON COLUMNS,
+[Measures].[Sales Amount] ON COLUMNS,
+
 {
-	[Sales Territory].[Sales Territory Country].&[Australia]:
-	[Sales Territory].[Sales Territory Country].&[Germany]
-}
-ON ROWS
+	[Dim Sales Territory].[Sales Territory Country].&[Australia]:
+	[Dim Sales Territory].[Sales Territory Country].&[Germany]
+} ON ROWS
 
 FROM
-[Adventure Works]
+[AdventureWorksDW]
 ```
 ### MINUS OPERATOR
 ---
@@ -50,18 +48,18 @@ If we have to select a range of information except some specific members then we
 
 ```mdx
 SELECT
-[Measures].[Sales Amount]
-ON COLUMNS,
+[Measures].[Sales Amount] ON COLUMNS,
+
 {
-	[Sales Territory].[Sales Territory Country].&[Australia]:
-	[Sales Territory].[Sales Territory Country].&[Germany]-
-	[Sales Territory].[Sales Territory Country].&[France]-
-	[Sales Territory].[Sales Territory Country].&[Canada]
+	[Dim Sales Territory].[Sales Territory Country].&[Australia]:
+	[Dim Sales Territory].[Sales Territory Country].&[Germany]-
+	[Dim Sales Territory].[Sales Territory Country].&[France]-
+	[Dim Sales Territory].[Sales Territory Country].&[Canada]
 }
 ON ROWS
 
 FROM
-[Adventure Works]
+[AdventureWorksDW]
 ```
 or,
 
@@ -69,19 +67,20 @@ we can put the members to exclude in a set and deduct them from the range.
 
 ```mdx
 SELECT
-[Measures].[Sales Amount]
-ON COLUMNS,
+[Measures].[Sales Amount] ON COLUMNS,
 
-[Sales Territory].[Sales Territory Country].&[Australia]:
-[Sales Territory].[Sales Territory Country].&[Germany]-
 {
-	[Sales Territory].[Sales Territory Country].&[France],
-	[Sales Territory].[Sales Territory Country].&[Canada]
+	[Dim Sales Territory].[Sales Territory Country].&[Australia]:
+	[Dim Sales Territory].[Sales Territory Country].&[Germany]
+}-
+{
+	[Dim Sales Territory].[Sales Territory Country].&[France],
+	[Dim Sales Territory].[Sales Territory Country].&[Canada]
 }
 ON ROWS
 
 FROM
-[Adventure Works]
+[AdventureWorksDW]
 ```
 #### EXCLUDING ELEMENTS WITHOUT MINUS OPERATOR
 
@@ -89,18 +88,17 @@ Another way to exclude some specific members from the output without using the m
 
 ```mdx
 SELECT
-[Measures].[Sales Amount]
-ON COLUMNS,
-{
-	[Sales Territory].[Sales Territory Country].&[Australia]:
-	[Sales Territory].[Sales Territory Country].&[France],
+[Measures].[Sales Amount] ON COLUMNS,
 
-	[Sales Territory].[Sales Territory Country].&[United Kingdom]:
-	[Sales Territory].[Sales Territory Country].&[United States]
+{
+	[Dim Sales Territory].[Sales Territory Country].&[Australia]:
+	[Dim Sales Territory].[Sales Territory Country].&[France],
+	[Dim Sales Territory].[Sales Territory Country].&[United Kingdom]:
+	[Dim Sales Territory].[Sales Territory Country].&[United States]
 }
 ON ROWS
 
 FROM
-[Adventure Works]
+[AdventureWorksDW]
 ```
 By using the above code, we can exclude the range of countries falling between *France* and *United Kingdom* in the cube.
