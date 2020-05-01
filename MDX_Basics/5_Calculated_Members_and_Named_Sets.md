@@ -192,6 +192,69 @@ FROM
 [AdventureWorksDW]
 ```
 
+### Static & Dynamic Named Sets
+
+A static named set executes the same result irrespective of the filter condition, whereas a dynamic named set alters the executions on the basis of filter condition.
+
+All the query scoped named sets are dynamic by nature but, all the session scoped named sets are static.
+
+For example :
+
+Let's say, we created a named set to get the Top-5 countries by reseller sales amount and to do so, we created a query scoped and a session scoped named set as follows -:
+
+```mdx
+-- Query_Scoped
+
+WITH SET [QS_Top5Countries] AS
+
+TOPCOUNT
+(
+	[Dim Sales Territory].[Sales Territory Country].[Sales Territory Country],
+	5,
+	[Measures].[Sales Amount]
+)
+
+-- Session_Scoped
+
+CREATE SET [AdventureWorksDW].[SS_Top5Countries] AS
+
+TOPCOUNT
+(
+	[Dim Sales Territory].[Sales Territory Country].[Sales Territory Country],
+	5,
+	[Measures].[Sales Amount]
+)
+
+```
+
+Now, if we execute a query with a `WHERE` clause for the "*Order Year = 2012*" then, the query scoped named set will execute the Top-5 countries on the basis of *2012 reseller sales amount*, whereas, the session scoped named set will execute the Top-5 countries without taking the filter provided into account.
+
+To create a dynamic session scoped named set, we have to write the named set as follows -:
+
+```mdx
+CREATE DYNAMIC SET [AdventureWorksDW].[SS_Top5Countries] AS
+
+TOPCOUNT
+(
+	[Dim Sales Territory].[Sales Territory Country].[Sales Territory Country],
+	5,
+	[Measures].[Sales Amount]
+)
+```
+### Dropping Session Scoped Named Sets
+
+To delete/drop a session scoped named set, we have to pass `DROP SET` command followed by the `[Cube Name].[Session Scoped Named Set Name]`
+
+```mdx
+DROP SET [AdventureWorksDW].[SS_Top5Countries]
+```
+
+Similarly, while creating a permanent named set (using visual studio platform) on cube, we have the option to choose whether we need it to be static or, dynamic; as shown in the below image :
+
+
+
+
+
 ## USING CALCULATED MEMBERS & NAMED SET TOGATHER
 ---
 We can define and calculated members and named set togather as follows :
