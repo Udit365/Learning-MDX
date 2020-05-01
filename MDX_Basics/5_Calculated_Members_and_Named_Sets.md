@@ -6,6 +6,8 @@
 
 Calculated members are nothing but the calculations applied over the members of the cube.
 
+The calculated members can't be displayed as an axis but, its the calculated results that shows up on cells (as coordinates).
+
 For example, we can create members like "*Profit*", "*Profit percentage*","*Product count*" etc. which are nothing but the measures created on the members.
 
 We need to perform the following steps to create a calculated member in Visual Studio :
@@ -61,14 +63,14 @@ In the below example, `[Measures].[InternetProfit]` is a calculated member which
 
 ```mdx
 WITH MEMBER [Measures].[InternetProfit] AS
-[Measures].[Internet Sales Amount]-[Measures].[Internet Total Product Cost]
+[Measures].[Sales Amount - Fact Internet Sales] - [Measures].[Total Product Cost - Fact Internet Sales]
 
 SELECT
 [Measures].[InternetProfit] ON COLUMNS,
-[Sales Territory].[Sales Territory Country].[Sales Territory Country] ON ROWS
+[Dim Sales Territory].[Sales Territory Country].[Sales Territory Country] ON ROWS
 
 FROM
-[Adventure Works]
+[AdventureWorksDW]
 ```
 
 ### SESSION SCOPED CALCULATED MEMBER
@@ -82,10 +84,10 @@ Session scoped calculated members are created first and then can be used in any 
 To create a session scoped calculated member, we have to follow the simillar syntax as below and execute it.
 
 ```mdx
-CREATE MEMBER [Adventure Works].[Measures].[SessionInternetProfit] AS
-[Measures].[Internet Sales Amount]-[Measures].[Internet Total Product Cost]
+CREATE MEMBER [AdventureWorksDW].[Measures].[SessionInternetProfit] AS
+[Measures].[Sales Amount - Fact Internet Sales] - [Measures].[Total Product Cost - Fact Internet Sales]
 ```
-***Notes :*** *Cube name must be provided before defining the session scoped calculated member*
+>***Notes :*** *Cube name must be provided before defining the session scoped calculated member*
 
 After creating the above session scoped calculated member, we can simply comment it out so that, we don't lose the calculated member name and its formula and then, we can query the cube any number of time within the same session by using the created session scoped calculated member.
 
@@ -94,44 +96,49 @@ An example of using the session scoped calculated member is :
 ```mdx
 SELECT
 [Measures].[SessionInternetProfit] ON COLUMNS,
-[Sales Territory].[Sales Territory Country].[Sales Territory Country] ON ROWS
+[Dim Sales Territory].[Sales Territory Group].[Sales Territory Group] ON ROWS
 
 FROM
-[Adventure Works]
+[AdventureWorksDW]
 ```
+> ***Notes :***</br>
+In query scoped calculation, the `WITH MEMBER` statement is executed with the `SELECT` statement whereas, in the session scoped calculation the `CREATE MEMBER`statement is executed first to create the calculated member for the session and then, the `SELECT` statement gets executed.
+
+
+
 ### CREATING MUTIPLE CALCULATED MEMBER AT ONCE
 ---
 We can also create mutiple calculated members (query scoped/session scoped) at once, as follows :
 
 ```mdx
 WITH MEMBER [Measures].[InternetProfit] AS
-[Measures].[Internet Sales Amount]-[Measures].[Internet Total Product Cost]
+[Measures].[Sales Amount - Fact Internet Sales]- [Measures].[Total Product Cost - Fact Internet Sales]
 
 MEMBER [Measures].[ProfitPct] AS
-[Measures].[InternetProfit]/[Measures].[Internet Sales Amount],
-FORMAT_STRING = 'Percent'
+[Measures].[InternetProfit]/[Measures].[Sales Amount - Fact Internet Sales], FORMAT_STRING = 'Percent'
 
 SELECT
 {
 	[Measures].[InternetProfit],
 	[Measures].[ProfitPct]
-}
-ON COLUMNS,
+} ON COLUMNS,
 
-[Sales Territory].[Sales Territory Country].[Sales Territory Country] ON ROWS
+[Dim Sales Territory].[Sales Territory Country].[Sales Territory Country] ON ROWS
 
 FROM
-[Adventure Works]
+[AdventureWorksDW]
 ```
 
 In the above formula, we have created 2 query scoped calculated members and for the 2nd calculated member, we don't have to write `WITH` before `MEMBER`.
 
-Similarly, we needed to show the `Profit` in percentages and therefore, we have assigned `Percent` for the `FORMAT_STRING` argument.
+Similarly, we needed to show the "*Profit*"" in percentages and therefore, we have assigned `Percent` for the `FORMAT_STRING` argument.
 
 ## NAMED SET
 ---
 
-Named sets can be understood as the alias that help developers by reducing the burder of writing repetative queries.
+Named sets can be understood as the alias that help developers by reducing the burden of writing repetative queries.
+
+Named sets are created when we have to show the members on either of the axis.
 
 For example, a named set can be created that finds out the "*Top 5 countries by Sales Amount*".
 
@@ -148,18 +155,14 @@ For example :
 In the below example, `[Year2012Onwards]` is a named set which is defined and executed along with rest of the MDX query
 
 ```mdx
-WITH SET [Year2012Onwards] AS
-[Ship Date].[Calendar Year].&[2012]:
-[Ship Date].[Calendar Year].&[2014]
+WITH SET [Year2010Onwards] AS
+[Order Date].[Calendar Year].&[2010] : [Order Date].[Calendar Year].&[2014]
 
-SELECT
-[Measures].[Sales Amount]
-ON COLUMNS,
-[Year2012Onwards]
-ON ROWS
+SELECT [Measures].[Sales Amount] ON COLUMNS,
+[Year2010Onwards] ON ROWS
 
 FROM
-[Adventure Works]
+[AdventureWorksDW]
 ```
 ### SESSION SCOPED NAMED SET
 ---
@@ -172,9 +175,8 @@ Session scoped named set are created first and then can be used in any number of
 To create a session scoped named set, we have to follow the simillar syntax as below and execute it.
 
 ```mdx
-CREATE SET [Adventure Works].[Year2012Onwards] AS
-[Ship Date].[Calendar Year].&[2012]:
-[Ship Date].[Calendar Year].&[2014]
+CREATE SET [AdventureWorksDW].[Session2010Onwards] AS
+[Order Date].[Calendar Year].&[2010] : [Order Date].[Calendar Year].&[2014]
 ```
 ***Notes :*** *Cube name must be provided before defining the session scoped named set*
 
@@ -183,111 +185,31 @@ After creating the above session scoped named set, we can simply comment it out 
 An example of using the session scoped calculated member is :
 
 ```mdx
-SELECT
-[Measures].[Sales Amount]
-ON COLUMNS,
-[Year2012Onwards]
-ON ROWS
+SELECT [Measures].[Sales Amount] ON COLUMNS,
+[Session2010Onwards] ON ROWS
 
 FROM
-[Adventure Works]
+[AdventureWorksDW]
 ```
 
-## ORDER SET
----
-
-This is used to sort the set based on a measure value.
-
-For example :
-
-If we want to sort the countries based on the `Sales Amount` in ascending or, descending order then, we can use the order set.
-
-The syntax for doing so is :
-
-> ORDER (set/attribute to sort, sort by measure, asc/desc)
-
-Let's see how we can sort the countries in desending order of `Sales Amount`
-
-```mdx
-SELECT
-[Measures].[Sales Amount]
-ON COLUMNS,
-ORDER
-(
-	[Sales Territory].[Sales Territory Country].[Sales Territory Country],
-	[Measures].[Sales Amount],
-	DESC
-)
-ON ROWS
-
-FROM
-[Adventure Works]
-```
-
-To see only the Top 5 countirs based on `Sales Amount` we can use the `HEAD()` function with `ORDER()`, as follows :
-
-```mdx
-SELECT
-[Measures].[Sales Amount]
-ON COLUMNS,
-HEAD(
-	ORDER
-	(
-		[Sales Territory].[Sales Territory Country].[Sales Territory Country],
-		[Measures].[Sales Amount],
-		DESC
-	),5
-)
-ON ROWS
-
-FROM
-[Adventure Works]
-```
-## TOPCOUNT()
----
-
-Insetad of using `HEAD()` and `ORDER()` togather to get the top 5 counties by a measure, we can use a single function, called `TOPCOUNT()`.
-
-The syntax of the function is as follows :
-
-> TOPCOUNT(set/attribute to sort, n , sort by measure)
-
-Let's see how we can get top 5 countries by a measure using `TOPCOUNT()` :
-
-```mdx
-SELECT
-[Measures].[Sales Amount]
-ON COLUMNS,
-TOPCOUNT
-(
-	[Sales Territory].[Sales Territory Country].[Sales Territory Country],
-	5,
-	[Measures].[Sales Amount]
-)
-ON ROWS
-
-FROM
-[Adventure Works]
-```
-We can also optimize (reducing code complexity and making it more readable) the code by, using the `TOPCOUNT()` function in a named set as follows :
-
-```mdx
-WITH SET [Top5Country] AS
-TOPCOUNT
-(
-	[Sales Territory].[Sales Territory Country].[Sales Territory Country],
-	5,
-	[Measures].[Sales Amount]
-)
-
-SELECT
-[Measures].[Sales Amount]
-ON COLUMNS,
-[Top5Country]
-ON ROWS
-
-FROM
-[Adventure Works]
-```
 ## USING CALCULATED MEMBERS & NAMED SET TOGATHER
 ---
+We can define and calculated members and named set togather as follows :
+
+*Show the reseller profit for the order year 2012 and onwards :*
+
+```MDX
+WITH SET [Year2012Onwards] AS
+[Order Date].[Calendar Year].&[2012] : [Order Date].[Calendar Year].&[2014]
+
+MEMBER [Measures].[Profit] AS
+[Measures].[Sales Amount]-[Measures].[Total Product Cost], FORMAT_STRING = 'Currency'
+
+SELECT
+[Measures].[Profit] ON COLUMNS,
+[Year2012Onwards] ON ROWS
+
+FROM
+[AdventureWorksDW]
+```
+Wheather we define multiple named sets or, calculated members or, both; we always use the `WITH` clause just once as showed in the above example.
