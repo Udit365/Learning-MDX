@@ -252,9 +252,6 @@ DROP SET [AdventureWorksDW].[SS_Top5Countries]
 Similarly, while creating a permanent named set (using visual studio platform) on cube, we have the option to choose whether we need it to be static or, dynamic; as shown in the below image :
 
 
-
-
-
 ## USING CALCULATED MEMBERS & NAMED SET TOGATHER
 ---
 We can define and calculated members and named set togather as follows :
